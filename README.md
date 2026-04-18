@@ -1,1 +1,1 @@
-# FronteraHacks_Hackothon-Social_Good_Track
+# FronteraHacks_Hackathon-Social_Good_Track
