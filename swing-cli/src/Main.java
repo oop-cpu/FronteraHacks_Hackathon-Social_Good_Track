@@ -93,6 +93,7 @@ public class Main{
         darkmodeBox.setFont(new Font("Serif", Font.PLAIN, 24));
         settings.add(darkmodeBox);
         
+        
         //frame config
         settings.setSize(sizeX, sizeY);
         settings.setLayout(null);
