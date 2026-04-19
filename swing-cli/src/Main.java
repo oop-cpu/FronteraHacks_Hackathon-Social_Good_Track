@@ -1,16 +1,20 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.*;
 import java.io.*;
 
 public class Main{
     public static JFrame menu = new JFrame();
     public static JFrame main = new JFrame();
     public static JFrame settings = new JFrame();
+    public static JFrame tableView = new JFrame();
     
     public static int sizeX = 1200;
     public static int sizeY = 900;
     public static int buttonSizeX = 100;
     public static int buttonSizeY = 50;
+
+    public static calculator cal = new calculator();
 
     //settings values
     public static boolean darkmode = false;
@@ -30,6 +34,13 @@ public class Main{
     }
     public static void exitClick(){
         System.out.println("Exit button click...");
+        closeAll();
+    }
+    public static void enterClick(String type, String name, String amount){
+        if(type.equals("bill"))
+            cal.addBill(name, amount);
+        else
+            cal.addIncome(name, amount);
     }
 
     //init/close frames
@@ -42,6 +53,109 @@ public class Main{
     public static void initMain(){
         System.out.println("Opening main...");
         closeAll();
+
+        //buttons
+        JButton back = new JButton("Menu");
+        back.setBounds(50, 50, buttonSizeX, buttonSizeY);
+        main.add(back);
+
+        JButton enterBill = new JButton("Enter");
+        JButton enterIncome = new JButton("Enter");
+
+        JButton openTable = new   JButton("Open Table");
+        JButton savings = new     JButton("View Savings");
+        JButton spending = new    JButton("View Spending");
+        JButton totalIncome = new JButton("View Income");
+        JButton totalBills = new  JButton("View Bills");
+
+        //text fields
+        JTextField typeBill = new JTextField();
+        JTextField amountBill = new JTextField();
+        JTextField typeIncome = new JTextField();
+        JTextField amountIncome = new JTextField();
+
+        //labels
+        JLabel pTypeBill = new JLabel("Enter the name of the bill...(no spaces)");
+        JLabel pAmountBill = new JLabel("Enter the amount of the bill...(number only)");
+
+        JLabel pTypeIncome = new JLabel("Enter the name of income...(no spaces)");
+        JLabel pAmountIncome = new JLabel("Enter the amount of income...(number only)");
+
+        JLabel output = new JLabel("");
+        
+        //formatting
+        typeBill.setBounds(250, 150, 300, 50);
+        pTypeBill.setBounds(225, 100, 400, 50);
+        amountBill.setBounds(650, 150, 300, 50);
+        pAmountBill.setBounds(625, 100, 400, 50);
+        enterBill.setBounds(1000, 150, buttonSizeX, buttonSizeY);
+
+        typeIncome.setBounds(250, 275, 300, 50);
+        pTypeIncome.setBounds(225, 225, 400, 50);
+        amountIncome.setBounds(650, 275, 300, 50);
+        pAmountIncome.setBounds(625, 225, 400, 50);
+        enterIncome.setBounds(1000, 275, buttonSizeX, buttonSizeY);
+
+        pTypeBill.setFont(new Font("Serif", Font.PLAIN, 18));
+        pAmountBill.setFont(new Font("Serif", Font.PLAIN, 18));
+        pTypeIncome.setFont(new Font("Serif", Font.PLAIN, 18));
+        pAmountIncome.setFont(new Font("Serif", Font.PLAIN, 18));
+        output.setFont(new Font("Serif", Font.PLAIN, 24));
+
+        openTable.setBounds(50, 400, buttonSizeX + 20, buttonSizeY);
+        savings.setBounds(50 + buttonSizeX + 25, 400, buttonSizeX + 20, buttonSizeY);
+        totalIncome.setBounds(50 + (buttonSizeX + 25)*2, 400, buttonSizeX + 20, buttonSizeY);
+        totalBills.setBounds(50 + (buttonSizeX + 25)*3, 400, buttonSizeX + 20, buttonSizeY);
+        spending.setBounds(50 + (buttonSizeX + 25)*4, 400, buttonSizeX + 30, buttonSizeY);
+
+        output.setBounds(50, 500, sizeX-100, 100);
+
+        main.add(typeBill);
+        main.add(amountBill);
+        main.add(enterBill);
+        main.add(pTypeBill);
+        main.add(pAmountBill);
+        main.add(typeIncome);
+        main.add(pTypeIncome);
+        main.add(amountIncome);
+        main.add(pAmountIncome);
+        main.add(enterIncome);
+
+        main.add(openTable);
+        main.add(savings);
+        main.add(totalIncome);
+        main.add(totalBills);
+        main.add(spending);
+
+        main.add(output);
+
+        //button events
+        back.addActionListener(e->
+            initMenu()                    
+        );
+
+        enterBill.addActionListener(e->
+            enterClick("bill", typeBill.getText(), amountBill.getText())                           
+        );
+        enterIncome.addActionListener(e->
+            enterClick("income", typeIncome.getText(), amountIncome.getText())                             
+        );
+
+        openTable.addActionListener(e->
+            initTableView()                           
+        );
+        savings.addActionListener(e->
+            output.setText(cal.getSavings())                         
+        );
+        totalIncome.addActionListener(e->
+            output.setText(cal.getTotalIncome())                         
+        );
+        totalBills.addActionListener(e->
+            output.setText(cal.getTotalBills())                         
+        );
+        spending.addActionListener(e->
+            output.setText(cal.getSpendingMoney())                         
+        );
 
         //frame config
         main.setSize(sizeX, sizeY);
@@ -92,12 +206,128 @@ public class Main{
         darkmodeBox.setBounds(sizeX/2, sizeY/2 - 80, 500, 50);
         darkmodeBox.setFont(new Font("Serif", Font.PLAIN, 24));
         settings.add(darkmodeBox);
-        
+
+        //buttons
+        JButton back = new JButton("Menu");
+        back.setBounds(50, 50, buttonSizeX, buttonSizeY);
+        settings.add(back);
+
+        //button events
+        back.addActionListener(e->
+            initMenu()                    
+        );
         
         //frame config
         settings.setSize(sizeX, sizeY);
         settings.setLayout(null);
         settings.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         settings.setVisible(true);
+    }
+    public static void initTableView(){
+        System.out.println("Opening table...");
+
+        JTable table = new JTable(cal.getData(), cal.getColumns());
+        JScrollPane scrollPane = new JScrollPane(table);
+
+        table.setBounds(0, 0, sizeX, sizeY);
+        
+        tableView.add(table);
+        
+        //frame config
+        tableView.setSize(sizeX, sizeY);
+        tableView.setLayout(null);
+        tableView.setVisible(true);
+    }
+
+    
+    
+    
+}
+
+
+
+class calculator{
+    private static String billNames     = "";
+    private static String billAmounts   = "";
+
+    private static String incomeNames   = "";
+    private static String incomeAmounts = "";
+
+    private static double savings       = 0.0;
+    private static double spending      = 0.0;
+
+    private static double totalBills = 0.0;
+    private static double totalIncome = 0.0;
+
+    private static int numBills = 0;
+    private static int numIncomes = 0;
+
+    //user input methods
+    public static void addBill(String name, String num){
+        billNames += name + " ";
+        billAmounts += num + " ";
+        totalBills += Double.valueOf(num);
+        numBills++;
+    }
+    public static void addIncome(String name, String num){
+        incomeNames += name + " ";
+        incomeAmounts += num + " ";
+        totalIncome += Double.valueOf(num);
+        numIncomes++;
+    }
+
+    //user option returns
+    public static String getSavings(){
+        String re = "Put $";
+        re += String.valueOf((totalIncome - totalBills)*0.1);
+        re += " into your savings account each month.";
+        return re;
+    }
+    public static String getTotalIncome(){
+        String re = "You make $";
+        re += String.valueOf(totalIncome);
+        re += " each month.";
+        return re;
+    }
+    public static String getTotalBills(){
+        String re = "You pay $";
+        re += String.valueOf(totalBills);
+        re += " each month.";
+        return re;
+    }
+    public static String getSpendingMoney(){
+        String re = "You can spend $";
+        re += String.valueOf(totalIncome - ((totalIncome - totalBills)*0.1) + totalBills);
+        re += " each month.";
+        return re;
+    }
+
+    //table helpers
+    public static String[] getColumns(){
+        String[] re = new String[3];
+        re[0] = "Types";
+        re[1] = "Names";
+        re[2] = "Amounts";
+        return re;
+    }
+    public static Object[][] getData(){
+        Object[][] data = new Object[numBills + numIncomes][3];
+
+        Scanner countBillNames = new Scanner(billNames);
+        Scanner countBillAmounts = new Scanner(billAmounts);
+        for(int i = 0; i < numBills; i++){
+            data[i][0] = "BILL";
+            data[i][1] = countBillNames.next();
+            data[i][2] = countBillAmounts.next();
+        }
+
+        Scanner countIncomeNames = new Scanner(incomeNames);
+        Scanner countIncomeAmounts = new Scanner(incomeAmounts);
+        for(int i = numBills; i < numIncomes + numBills; i++){
+            data[i][0] = "INCOME";
+            data[i][1] = countIncomeNames.next();
+            data[i][2] = countIncomeAmounts.next();
+        }
+        return data;
     }
 }
