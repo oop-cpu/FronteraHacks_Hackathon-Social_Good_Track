@@ -42,6 +42,30 @@ public class Main{
         else
             cal.addIncome(name, amount);
     }
+    public static void darkmodeClick(boolean dm){
+        darkmode = dm;
+
+        if(darkmode){
+            menu.setBackground(Color.DARK_GRAY);
+            main.setBackground(Color.DARK_GRAY);
+            settings.setBackground(Color.DARK_GRAY);
+            tableView.setBackground(Color.DARK_GRAY);
+            menu.setForeground(Color.WHITE);
+            main.setForeground(Color.WHITE);
+            settings.setForeground(Color.WHITE);
+            tableView.setForeground(Color.WHITE);
+        }
+        else{
+            menu.setBackground(Color.WHITE);
+            main.setBackground(Color.WHITE);
+            settings.setBackground(Color.WHITE);
+            tableView.setBackground(Color.WHITE);
+            menu.setForeground(Color.BLACK);
+            main.setForeground(Color.BLACK);
+            settings.setForeground(Color.BLACK);
+            tableView.setForeground(Color.BLACK);
+        }
+    }
 
     //init/close frames
     public static void closeAll(){
@@ -169,16 +193,22 @@ public class Main{
         
         //buttons
         JButton start = new JButton("Start");
-        start.setBounds(sizeX/2, sizeY/2  - 80, buttonSizeX, buttonSizeY);
+        start.setBounds(sizeX/2 - buttonSizeX, sizeY/2  - 80, buttonSizeX, buttonSizeY);
         menu.add(start);
 
         JButton settings = new JButton("Settings");
-        settings.setBounds(sizeX/2, sizeY/2, buttonSizeX, buttonSizeY);
+        settings.setBounds(sizeX/2 - buttonSizeX, sizeY/2, buttonSizeX, buttonSizeY);
         menu.add(settings);
 
         JButton exit = new JButton("Exit");
-        exit.setBounds(sizeX/2, sizeY/2 + 80, buttonSizeX, buttonSizeY);
+        exit.setBounds(sizeX/2 - buttonSizeX, sizeY/2 + 80, buttonSizeX, buttonSizeY);
         menu.add(exit);
+
+        //title
+        JLabel title = new JLabel("Budget Buddy");
+        title.setBounds(75, 50, sizeX - 100, 250);
+        title.setFont(new Font("Serif", Font.PLAIN, 150));
+        menu.add(title);
 
         //button events
         start.addActionListener(e->
@@ -212,9 +242,16 @@ public class Main{
         back.setBounds(50, 50, buttonSizeX, buttonSizeY);
         settings.add(back);
 
+        JButton set = new JButton("Set");
+        set.setBounds(sizeX/2 - buttonSizeX, sizeY/2, buttonSizeX, buttonSizeY);
+        settings.add(set);
+
         //button events
         back.addActionListener(e->
             initMenu()                    
+        );
+        set.addActionListener(e->
+            darkmodeClick(darkmodeBox.isSelected())
         );
         
         //frame config
@@ -279,25 +316,25 @@ class calculator{
     //user option returns
     public static String getSavings(){
         String re = "Put $";
-        re += String.valueOf((totalIncome - totalBills)*0.1);
+        re += String.valueOf(Math.round(((totalIncome - totalBills)*0.1) * 100.0) / 100.0);
         re += " into your savings account each month.";
         return re;
     }
     public static String getTotalIncome(){
         String re = "You make $";
-        re += String.valueOf(totalIncome);
+        re += String.valueOf(Math.round(totalIncome * 100.0) / 100.0);
         re += " each month.";
         return re;
     }
     public static String getTotalBills(){
         String re = "You pay $";
-        re += String.valueOf(totalBills);
+        re += String.valueOf(Math.round(totalBills * 100.0) / 100.0);
         re += " each month.";
         return re;
     }
     public static String getSpendingMoney(){
         String re = "You can spend $";
-        re += String.valueOf(totalIncome - ((totalIncome - totalBills)*0.1) + totalBills);
+        re += String.valueOf(Math.round(((totalIncome - totalBills) - ((totalIncome - totalBills)*0.1)) * 100.0) / 100.0);
         re += " each month.";
         return re;
     }
@@ -331,3 +368,5 @@ class calculator{
         return data;
     }
 }
+
+
